@@ -1,4 +1,4 @@
-/* General styling */
+
 * {
     font-family: 'Raleway', sans-serif;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
@@ -114,7 +114,7 @@
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-/* Loading Screen */
+
 .spinner {
     width: 100px;
     height: 100px;
@@ -158,7 +158,7 @@
     }
 }
 
-/* Download Screen */
+
 .download-screen {
     display: flex;
     flex-direction: column;
@@ -168,7 +168,7 @@
     color: white;
 }
 
-/* Updated .audio-container to be a vertical flexbox */
+
 .audio-container {
     padding: 40px 60px;
     border-radius: 20px;
@@ -181,21 +181,21 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Aligns content to the top */
+    justify-content: flex-start; 
     
     max-width: 80vw;
-    height: auto; /* Removed fixed height to allow shrinking */
+    height: auto; 
     color: white;
 }
 
-/* Updated .title-container to remove conflicting rules and add proper spacing */
+
 .title-container {
     color: white;
     text-align: center;
-    margin-bottom: 20px; /* Added some margin for space below the title */
+    margin-bottom: 20px;
 }
 
-/* The wrapper for the audio players and divider */
+
 .audio-player-wrapper {
     display: flex;
     width: 100%;
@@ -221,7 +221,7 @@
 
 .download-text {
     font-size: 30px;
-    margin: 0 0 10px 0; /* Adjusted margin to reduce space */
+    margin: 0 0 10px 0; 
     padding-bottom: 10px;
 }
 

@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -102,13 +102,30 @@ def isolateGuitar_sync(audio_path: str):
     os.remove(vocals_path)
 
 @app.post("/songprocessing")
-async def songprocessing(data: URLRequest):
+async def songprocessing(data: URLRequest, request: Request):
     mp3Folder = "C:/Users/jagan/Desktop/GuitarIsolater/my-app/src/mp3Downloads"
     loop = asyncio.get_event_loop()
+    user_ip = request.client.host
 
     try:
         await asyncio.sleep(0.1)
         _broadcast("Downloading YouTube video...")
+
+        def get_info(url):
+            ydl_opts = {
+                'format': 'bestaudio/best',
+                'quiet': True,
+                'noplaylist': True,
+            }
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+                return info
+
+        info = await loop.run_in_executor(None, get_info, data.url)
+        duration = info.get('duration', 0)  
+
+        if duration > 6000:
+            return JSONResponse(status_code = 400, content={"error": "Song is longer than 10 minutes. Please use a shorter song."})
 
         file_path = await loop.run_in_executor(None, YoutubeToMP3, data.url, mp3Folder)
 

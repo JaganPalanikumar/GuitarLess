@@ -14,8 +14,7 @@ function App() {
 
   const eventSourceRef = useRef(null);
 
-  // Timer and percentage states
-  const [percentage, setPercentage] = useState(null); // null means percentage not started yet
+  const [percentage, setPercentage] = useState(null); 
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const timerRef = useRef(null);
 
@@ -56,7 +55,7 @@ function App() {
       eventSourceRef.current.close();
     }
 
-    // Start the elapsed timer immediately on loading start
+
     timerRef.current = setInterval(() => {
       setElapsedSeconds(prev => prev + 1);
     }, 1000);
@@ -86,6 +85,7 @@ function App() {
 
       if (!response.ok) {
         const errBody = await response.text();
+        setErrorText('Song is longer than 10 minutes. Please use a shorter song.')
         throw new Error(`Server error: ${errBody}`);
       }
 
@@ -98,7 +98,7 @@ function App() {
       setLoading(false);
       setScreen(true);
 
-      // Stop timer on done
+
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
@@ -127,14 +127,13 @@ function App() {
   };
 
   useEffect(() => {
-    // Update percentage increment only if isolating guitar phase started (percentage !== null)
     if (percentage === null) return;
 
     if (percentage >= 99) return;
 
     const interval = setInterval(() => {
       setPercentage(prev => (prev < 99 ? prev + 1 : 99));
-    }, 4200); // ~ 5 min from 0 to 99 is about 3000ms per increment
+    }, 4200); 
 
     return () => clearInterval(interval);
   }, [percentage]);
