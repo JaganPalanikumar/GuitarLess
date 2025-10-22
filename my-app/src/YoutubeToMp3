@@ -1,0 +1,73 @@
+import yt_dlp
+import os
+import subprocess
+import sys
+import soundfile as sf
+from pydub import AudioSegment
+
+def YoutubeToMP3(url, mp3Folder):
+    os.makedirs(mp3Folder, exist_ok=True)
+
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'outtmpl': os.path.join(mp3Folder, '%(title)s.%(ext)s'),
+        'postprocessors': [],
+        'quiet': False,  
+        'noplaylist': True,  
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=True)
+            filename = ydl.prepare_filename(info)
+            return filename
+    except Exception as e:
+        return e
+
+def isolateGuitar(audio_path):
+    try:
+        print("Isolating guitar using HTDemucs...")
+        output_dir = os.path.join(os.path.dirname(__file__))
+        subprocess.run([sys.executable, "-m", "demucs", "--name", "htdemucs", audio_path], cwd=output_dir)
+        
+        filename = os.path.splitext(os.path.basename(audio_path))[0]
+        stem_dir = os.path.join(output_dir, "separated", "htdemucs", filename)
+        
+        guitar_path = os.path.join(stem_dir, "other.wav")
+        drums_path = os.path.join(stem_dir, "drums.wav")
+        bass_path = os.path.join(stem_dir, "bass.wav")
+        vocals_path = os.path.join(stem_dir, "vocals.wav")
+
+        output_folder = os.path.join(output_dir, "output")
+        os.makedirs(output_folder, exist_ok=True)
+
+        guitar = AudioSegment.from_wav(guitar_path)
+        guitar.export(os.path.join(output_folder, "Isolated_Guitar_Only.wav"), format="wav")
+
+        drums = AudioSegment.from_wav(drums_path)
+        bass = AudioSegment.from_wav(bass_path)
+        vocals = AudioSegment.from_wav(vocals_path)
+
+        guitarless = drums.overlay(bass).overlay(vocals)
+        guitarless.export(os.path.join(output_folder, "Guitarless.wav"), format="wav")
+        
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+
+def guitarless():
+    vocals, sr = sf.read("vocals.wav")
+    drums, _ = sf.read("drums.wav")
+    bass, _ = sf.read("bass.wav")
+    
+    combined = vocals + drums + bass
+
+    sf.write("guitarless.wav", combined, sr)    
+
+def main():
+    mp3Folder = "C:/Users/jagan/Desktop/GuitarIsolater/my-app/src/mp3Downloads"
+    url = "https://www.youtube.com/watch?v=vqBveK7XZg8"
+    filePath = YoutubeToMP3(url, mp3Folder)
+    isolateGuitar(filePath)
+
+if __name__ == "__main__":
+    main()
