@@ -142,8 +142,11 @@ async def songprocessing(data: URLRequest, request: Request):
         def get_info(url):
             ydl_opts = {
                 'format': 'bestaudio/best',
-                'quiet': True,
+                'outtmpl': os.path.join(mp3Folder, '%(title)s.%(ext)s'),
+                'quiet': False,
                 'noplaylist': True,
+                'nocheckcertificate': True,
+                'http_headers': {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'}
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=False)
