@@ -190,22 +190,31 @@ async def songprocessing(data: URLRequest, request: Request):
 @app.post("/upload")
 async def upload_song(file: UploadFile = File(...)):
     try:
-        temp_dir = os.path.join(os.path.dirname(__file__), "uploads")
+        base_dir = os.path.dirname(__file__)
+        temp_dir = os.path.join(base_dir, "uploads")
         os.makedirs(temp_dir, exist_ok=True)
 
         temp_path = os.path.join(temp_dir, file.filename)
         with open(temp_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
+        if not os.path.exists(temp_path):
+            raise FileNotFoundError(f"File not saved: {temp_path}")
+
         _broadcast("Isolating guitar ... This may take a few minutes.")
+
         await asyncio.get_event_loop().run_in_executor(None, isolateGuitar_sync, temp_path)
+
         _broadcast("Done")
 
         BACKEND_URL = "http://guitarlessappdemo.westus2.azurecontainer.io:8000"
         guitar_only_url = f"{BACKEND_URL}/output/Isolated_Guitar_Only.mp3"
         guitarless_url = f"{BACKEND_URL}/output/Guitarless.mp3"
 
-        os.remove(temp_path)
+        try:
+            os.remove(temp_path)
+        except FileNotFoundError:
+            pass
 
         return JSONResponse(content={
             "guitar_only": guitar_only_url,
