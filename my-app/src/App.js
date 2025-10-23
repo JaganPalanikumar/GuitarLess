@@ -60,7 +60,7 @@ function App() {
       setElapsedSeconds(prev => prev + 1);
     }, 1000);
 
-    const eventSource = new EventSource('http://guitarlessappdemo.westus.azurecontainer.io:8000/progress');
+    const eventSource = new EventSource('https://guitarlessappdemo.westus.azurecontainer.io/progress');
     eventSourceRef.current = eventSource;
 
     eventSource.onmessage = (event) => {
@@ -77,7 +77,7 @@ function App() {
     };
 
     try {
-      const response = await fetch('http://guitarlessappdemo.westus.azurecontainer.io:8000/songprocessing', {
+      const response = await fetch('https://guitarlessappdemo.westus.azurecontainer.io/songprocessing', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ url })
