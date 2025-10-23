@@ -274,3 +274,20 @@
     font-weight: 800;
     margin: 0;
 }
+
+.upload-btn {
+  margin-left: 10px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 25px;
+  padding: 8px 15px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 15px;
+}
+
+.upload-btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}

@@ -11,6 +11,7 @@ function App() {
   const [guitarOnlyUrl, setGuitarOnlyUrl] = useState('');
   const [songName, setSongName] = useState('')
   const [errorText, setErrorText] = useState('')
+  const [file, setFile] = useState(null);
 
   const eventSourceRef = useRef(null);
 
@@ -41,84 +42,157 @@ function App() {
   };
 
   const handleSubmit = async () => {
-    if (url.trim() === "") {
-      setErrorText('Error: Enter a valid YouTube URL!');
-      return;
-    }
-    setLoading(true);
-    setScreen(false);
-    setStatusMessage("");
-    setPercentage(null);
-    setElapsedSeconds(0);
+  if (!url.trim() && !file) {
+    setErrorText('Please upload a file or enter a YouTube URL.');
+    return;
+  }
 
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-    }
+  setLoading(true);
+  setScreen(false);
+  setStatusMessage('');
+  setPercentage(null);
+  setElapsedSeconds(0);
 
+  if (eventSourceRef.current) eventSourceRef.current.close();
 
-    timerRef.current = setInterval(() => {
-      setElapsedSeconds(prev => prev + 1);
-    }, 1000);
+  timerRef.current = setInterval(() => {
+    setElapsedSeconds(prev => prev + 1);
+  }, 1000);
 
-    const eventSource = new EventSource('/progress');
-    eventSourceRef.current = eventSource;
+  const eventSource = new EventSource('https://guitarlessappdemo.westus.azurecontainer.io:8000/progress');
+  eventSourceRef.current = eventSource;
 
-    eventSource.onmessage = (event) => {
-      handleSSEMessage(event.data);
-
-      if (event.data.toLowerCase().startsWith("done") || event.data.toLowerCase().startsWith("error")) {
-        eventSource.close();
-      }
-    };
-
-    eventSource.onerror = (err) => {
-      console.error('SSE connection error:', err);
+  eventSource.onmessage = (event) => {
+    handleSSEMessage(event.data);
+    if (event.data.toLowerCase().startsWith('done') || event.data.toLowerCase().startsWith('error')) {
       eventSource.close();
-    };
-
-    try {
-      const response = await fetch('/songprocessing', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ url })
-      });
-
-      if (!response.ok) {
-        const errBody = await response.text();
-        setErrorText('Song is longer than 10 minutes. Please use a shorter song.')
-        throw new Error(`Server error: ${errBody}`);
-      }
-
-      const data = await response.json();
-
-      setGuitarlessUrl(data.guitarless);
-      setGuitarOnlyUrl(data.guitar_only);
-      setSongName(data.songname);
-
-      setLoading(false);
-      setScreen(true);
-
-
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-      setPercentage(null);
-    } catch (err) {
-      console.error('Error sending URL:', err);
-      setErrorText('Error: Enter a valid YouTube URL!')
-      setStatusMessage(`Error: ${err.message}`);
-      setLoading(false);
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-      }
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-      setPercentage(null);
     }
   };
+
+  eventSource.onerror = (err) => {
+    console.error('SSE connection error:', err);
+    eventSource.close();
+  };
+
+  try {
+    let response;
+
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      response = await fetch('https://guitarlessappdemo.westus.azurecontainer.io:8000/upload', {
+        method: 'POST',
+        body: formData,
+      });
+    } else {
+      response = await fetch('https://guitarlessappdemo.westus.azurecontainer.io:8000/songprocessing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+    }
+
+    if (!response.ok) {
+      const errBody = await response.text();
+      throw new Error(`Server error: ${errBody}`);
+    }
+
+    const data = await response.json();
+    setGuitarlessUrl(data.guitarless);
+    setGuitarOnlyUrl(data.guitar_only);
+    setSongName(data.songname);
+
+    setLoading(false);
+    setScreen(true);
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    setPercentage(null);
+
+  } catch (err) {
+    console.error('Error sending URL or file:', err);
+    setErrorText('Processing failed. Please try again.');
+    setStatusMessage(`Error: ${err.message}`);
+    setLoading(false);
+    if (eventSourceRef.current) eventSourceRef.current.close();
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    setPercentage(null);
+  }
+};
+
+const handleFileUpload = async (uploadedFile) => {
+  setErrorText('');
+  setStatusMessage('');
+  setLoading(true);
+  setScreen(false);
+  setPercentage(null);
+  setElapsedSeconds(0);
+
+  if (eventSourceRef.current) eventSourceRef.current.close();
+
+  timerRef.current = setInterval(() => {
+    setElapsedSeconds(prev => prev + 1);
+  }, 1000);
+
+  const eventSource = new EventSource('https://guitarlessappdemo.westus.azurecontainer.io:8000/progress');
+  eventSourceRef.current = eventSource;
+
+  eventSource.onmessage = (event) => {
+    handleSSEMessage(event.data);
+    if (event.data.toLowerCase().startsWith('done') || event.data.toLowerCase().startsWith('error')) {
+      eventSource.close();
+    }
+  };
+
+  eventSource.onerror = (err) => {
+    console.error('SSE connection error:', err);
+    eventSource.close();
+  };
+
+  try {
+    const formData = new FormData();
+    formData.append('file', uploadedFile);
+
+    const response = await fetch('https://guitarlessappdemo.westus.azurecontainer.io:8000/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errBody = await response.text();
+      throw new Error(`Server error: ${errBody}`);
+    }
+
+    const data = await response.json();
+    setGuitarlessUrl(data.guitarless);
+    setGuitarOnlyUrl(data.guitar_only);
+    setSongName(data.songname);
+
+    setLoading(false);
+    setScreen(true);
+
+    clearInterval(timerRef.current);
+    timerRef.current = null;
+    setPercentage(null);
+
+  } catch (err) {
+    console.error('Error uploading file:', err);
+    setErrorText('File processing failed. Please try again.');
+    setStatusMessage(`Error: ${err.message}`);
+    setLoading(false);
+    if (eventSourceRef.current) eventSourceRef.current.close();
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    setPercentage(null);
+  }
+};
 
   const handleEnter = (e) => {
     if (e.key === "Enter") {
@@ -221,10 +295,27 @@ function App() {
           onKeyDown={handleEnter}
           type="text"
           className="url-input"
-          placeholder="Enter Youtube URL Here ... "
+          placeholder="Enter YouTube URL Here ..."
           value={url}
           onChange={(e) => setUrl(e.target.value)}
         />
+
+        <label className="upload-btn">
+          <input
+            type="file"
+            accept=".mp3,.wav"
+            style={{ display: 'none' }}
+            onChange={(e) => {
+              const uploaded = e.target.files[0];
+              if (uploaded) {
+                setFile(uploaded);
+                handleFileUpload(uploaded);
+              }
+            }}
+          />
+          Upload
+        </label>
+
         <button className="submit-arrow" onClick={handleSubmit}>
           <svg viewBox="0 0 24 24">
             <path d="M10 17l5-5-5-5v10z" />

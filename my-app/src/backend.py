@@ -11,6 +11,8 @@ from pydub import AudioSegment
 import asyncio
 from sse_starlette.sse import EventSourceResponse
 from typing import Set
+from fastapi import UploadFile, File
+import shutil
 
 
 app = FastAPI()
@@ -21,7 +23,7 @@ app.mount("/output", StaticFiles(directory=output_dir), name="output")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://mango-rock-02e8e531e.3.azurestaticapps.net"],
+    allow_origins=["https://guitarless.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -180,6 +182,37 @@ async def songprocessing(data: URLRequest, request: Request):
             "guitarless": guitarless_url,
             "songname": os.path.basename(file_path)
         })
+    except Exception as exc:
+        err_msg = f"Error: {str(exc)}"
+        _broadcast(err_msg)
+        return JSONResponse(status_code=500, content={"error": str(exc)})
+    
+@app.post("/upload")
+async def upload_song(file: UploadFile = File(...)):
+    try:
+        temp_dir = os.path.join(os.path.dirname(__file__), "uploads")
+        os.makedirs(temp_dir, exist_ok=True)
+
+        temp_path = os.path.join(temp_dir, file.filename)
+        with open(temp_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        _broadcast("Isolating guitar ... This may take a few minutes.")
+        await asyncio.get_event_loop().run_in_executor(None, isolateGuitar_sync, temp_path)
+        _broadcast("Done")
+
+        BACKEND_URL = "https://guitarlessappdemo.westus.azurecontainer.io:8000"
+        guitar_only_url = f"{BACKEND_URL}/output/Isolated_Guitar_Only.mp3"
+        guitarless_url = f"{BACKEND_URL}/output/Guitarless.mp3"
+
+        os.remove(temp_path)
+
+        return JSONResponse(content={
+            "guitar_only": guitar_only_url,
+            "guitarless": guitarless_url,
+            "songname": file.filename
+        })
+
     except Exception as exc:
         err_msg = f"Error: {str(exc)}"
         _broadcast(err_msg)
