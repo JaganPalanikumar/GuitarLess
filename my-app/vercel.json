@@ -1,6 +1,7 @@
 {
   "rewrites": [
-    { "source": "/songprocessing", "destination": "http://guitarlessappdemo.westus.azurecontainer.io/songprocessing" },
-    { "source": "/progress", "destination": "http://guitarlessappdemo.westus.azurecontainer.io/progress" }
+    { "source": "/songprocessing", "destination": "http://guitarlessappdemo.westus2.azurecontainer.io:8000/songprocessing" },
+    { "source": "/progress", "destination": "http://guitarlessappdemo.westus2.azurecontainer.io:8000/progress" },
+    { "source": "/upload", "destination": "http://guitarlessappdemo.westus2.azurecontainer.io:8000/upload" }
   ]
 }

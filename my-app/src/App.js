@@ -59,7 +59,7 @@ function App() {
     setElapsedSeconds(prev => prev + 1);
   }, 1000);
 
-  const eventSource = new EventSource('https://guitarlessappdemo.westus.azurecontainer.io:8000/progress');
+  const eventSource = new EventSource('/progress');
   eventSourceRef.current = eventSource;
 
   eventSource.onmessage = (event) => {
@@ -80,12 +80,12 @@ function App() {
     if (file) {
       const formData = new FormData();
       formData.append('file', file);
-      response = await fetch('https://guitarlessappdemo.westus.azurecontainer.io:8000/upload', {
+      response = await fetch('/upload', {
         method: 'POST',
         body: formData,
       });
     } else {
-      response = await fetch('https://guitarlessappdemo.westus.azurecontainer.io:8000/songprocessing', {
+      response = await fetch('/songprocessing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
@@ -139,7 +139,7 @@ const handleFileUpload = async (uploadedFile) => {
     setElapsedSeconds(prev => prev + 1);
   }, 1000);
 
-  const eventSource = new EventSource('https://guitarlessappdemo.westus.azurecontainer.io:8000/progress');
+  const eventSource = new EventSource('/progress');
   eventSourceRef.current = eventSource;
 
   eventSource.onmessage = (event) => {
@@ -158,7 +158,7 @@ const handleFileUpload = async (uploadedFile) => {
     const formData = new FormData();
     formData.append('file', uploadedFile);
 
-    const response = await fetch('https://guitarlessappdemo.westus.azurecontainer.io:8000/upload', {
+    const response = await fetch('/upload', {
       method: 'POST',
       body: formData,
     });

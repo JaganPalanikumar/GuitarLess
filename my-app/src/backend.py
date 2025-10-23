@@ -171,7 +171,7 @@ async def songprocessing(data: URLRequest, request: Request):
 
         _broadcast("Done")
 
-        BACKEND_URL = "https://guitarlessappdemo.westus.azurecontainer.io:8000"
+        BACKEND_URL = "http://guitarlessappdemo.westus2.azurecontainer.io:8000"
         guitar_only_url = f"{BACKEND_URL}/output/Isolated_Guitar_Only.mp3"
         guitarless_url = f"{BACKEND_URL}/output/Guitarless.mp3"
 
@@ -201,7 +201,7 @@ async def upload_song(file: UploadFile = File(...)):
         await asyncio.get_event_loop().run_in_executor(None, isolateGuitar_sync, temp_path)
         _broadcast("Done")
 
-        BACKEND_URL = "https://guitarlessappdemo.westus.azurecontainer.io:8000"
+        BACKEND_URL = "http://guitarlessappdemo.westus2.azurecontainer.io:8000"
         guitar_only_url = f"{BACKEND_URL}/output/Isolated_Guitar_Only.mp3"
         guitarless_url = f"{BACKEND_URL}/output/Guitarless.mp3"
 
