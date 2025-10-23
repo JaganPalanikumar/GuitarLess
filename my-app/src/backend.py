@@ -131,7 +131,7 @@ def isolateGuitar_sync(audio_path: str):
 
 @app.post("/songprocessing")
 async def songprocessing(data: URLRequest, request: Request):
-    mp3Folder = "C:/Users/jagan/Desktop/GuitarIsolater/my-app/src/mp3Downloads"
+    mp3Folder = "/app/mp3Downloads"
     loop = asyncio.get_event_loop()
     user_ip = request.client.host
 
