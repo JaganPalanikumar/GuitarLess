@@ -21,7 +21,7 @@ app.mount("/output", StaticFiles(directory=output_dir), name="output")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://mango-rock-02e8e531e.3.azurestaticapps.net"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -169,7 +169,7 @@ async def songprocessing(data: URLRequest, request: Request):
 
         _broadcast("Done")
 
-        BACKEND_URL = "http://guitarlessappdemo.westus.azurecontainer.io:8000"
+        BACKEND_URL = "https://guitarlessappdemo.westus.azurecontainer.io:8000"
         guitar_only_url = f"{BACKEND_URL}/output/Isolated_Guitar_Only.mp3"
         guitarless_url = f"{BACKEND_URL}/output/Guitarless.mp3"
 
