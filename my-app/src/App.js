@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 
 //const GETURL = 'https://guitarlessbackend.azurewebsites.net'
-const GETURL = 'http://guitarlessappdemo.westus.azurecontainer.io:80'
+const GETURL = 'http://guitarlessbackend.westus.azurecontainer.io'
 
 
 function App() {
