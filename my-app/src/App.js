@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 
-const GETURL = 'https://guitarlessbackend.azurewebsites.net'
+//const GETURL = 'https://guitarlessbackend.azurewebsites.net'
+const GETURL = 'http://localhost'
 
 
 function App() {
