@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 
+const GETURL = 'https://guitarlessbackend.azurewebsites.net'
+
 
 function App() {
   const [url, setUrl] = useState('');
@@ -60,7 +62,7 @@ function App() {
     setElapsedSeconds(prev => prev + 1);
   }, 1000);
 
-  const eventSource = new EventSource('https://guitarlessbackend.azurewebsites.net/progress');
+  const eventSource = new EventSource(GETURL+'/progress');
   eventSourceRef.current = eventSource;
 
   eventSource.onmessage = (event) => {
@@ -81,12 +83,12 @@ function App() {
     if (file) {
       const formData = new FormData();
       formData.append('file', file);
-      response = await fetch('https://guitarlessbackend.azurewebsites.net/upload', {
+      response = await fetch(GETURL+'/upload', {
         method: 'POST',
         body: formData,
       });
     } else {
-      response = await fetch('https://guitarlessbackend.azurewebsites.net/songprocessing', {
+      response = await fetch(GETURL+'/songprocessing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
@@ -140,7 +142,7 @@ const handleFileUpload = async (uploadedFile) => {
     setElapsedSeconds(prev => prev + 1);
   }, 1000);
 
-  const eventSource = new EventSource('https://guitarlessbackend.azurewebsites.net/progress');
+  const eventSource = new EventSource(GETURL+'/progress');
   eventSourceRef.current = eventSource;
 
   eventSource.onmessage = (event) => {
@@ -159,7 +161,7 @@ const handleFileUpload = async (uploadedFile) => {
     const formData = new FormData();
     formData.append('file', uploadedFile);
 
-    const response = await fetch('https://guitarlessbackend.azurewebsites.net/upload', {
+    const response = await fetch(GETURL+'/upload', {
       method: 'POST',
       body: formData,
     });
