@@ -25,7 +25,7 @@ app.mount("/output", StaticFiles(directory=output_dir), name="output")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://guitarless.vercel.app"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
