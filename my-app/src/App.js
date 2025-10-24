@@ -291,6 +291,7 @@ const handleFileUpload = async (uploadedFile) => {
         <h1 className="main-title">Create Guitarless Backing Tracks From Any Song</h1>
         <p className="subtitle">
           For Free! Simply enter the YouTube URL to the song of your choosing below and download or directly play backing tracks with the isolated guitar removed using advanced music source seperation AI.
+          <br /><br /><div className="update">UPDATE: Youtube doesn't like when we download their videos. If there is an error when entering a youtube music video URL, please upload a .mp3 or .wav of the music video instead. Use <a href='https://ytmp3.cx/mI5b/' target='_blank' rel="noopener noreferrer">THIS WEBSITE</a> to convert video to mp3 or wav!</div>
         </p>
       </div>
 
