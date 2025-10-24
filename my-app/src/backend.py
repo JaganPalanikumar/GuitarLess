@@ -17,6 +17,7 @@ import shutil
 
 app = FastAPI()
 
+BACKEND_URL = "https://guitarlessbackend.azurewebsites.net"
 output_dir = os.path.join(os.path.dirname(__file__), "output")
 os.makedirs(output_dir, exist_ok=True)
 app.mount("/output", StaticFiles(directory=output_dir), name="output")
@@ -171,7 +172,6 @@ async def songprocessing(data: URLRequest, request: Request):
 
         _broadcast("Done")
 
-        BACKEND_URL = "http://guitarlessappdemo.westus2.azurecontainer.io:8000"
         guitar_only_url = f"{BACKEND_URL}/output/Isolated_Guitar_Only.mp3"
         guitarless_url = f"{BACKEND_URL}/output/Guitarless.mp3"
 
@@ -207,7 +207,6 @@ async def upload_song(file: UploadFile = File(...)):
 
         _broadcast("Done")
 
-        BACKEND_URL = "http://guitarlessappdemo.westus2.azurecontainer.io:8000"
         guitar_only_url = f"{BACKEND_URL}/output/Isolated_Guitar_Only.mp3"
         guitarless_url = f"{BACKEND_URL}/output/Guitarless.mp3"
 

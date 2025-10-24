@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 
+
 function App() {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -59,7 +60,7 @@ function App() {
     setElapsedSeconds(prev => prev + 1);
   }, 1000);
 
-  const eventSource = new EventSource('http://guitarlessappdemo.westus2.azurecontainer.io:8000/progress');
+  const eventSource = new EventSource('https://guitarlessbackend.azurewebsites.net/progress');
   eventSourceRef.current = eventSource;
 
   eventSource.onmessage = (event) => {
@@ -80,12 +81,12 @@ function App() {
     if (file) {
       const formData = new FormData();
       formData.append('file', file);
-      response = await fetch('http://guitarlessappdemo.westus2.azurecontainer.io:8000/upload', {
+      response = await fetch('https://guitarlessbackend.azurewebsites.net/upload', {
         method: 'POST',
         body: formData,
       });
     } else {
-      response = await fetch('http://guitarlessappdemo.westus2.azurecontainer.io:8000/songprocessing', {
+      response = await fetch('https://guitarlessbackend.azurewebsites.net/songprocessing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
@@ -139,7 +140,7 @@ const handleFileUpload = async (uploadedFile) => {
     setElapsedSeconds(prev => prev + 1);
   }, 1000);
 
-  const eventSource = new EventSource('http://guitarlessappdemo.westus2.azurecontainer.io:8000/progress');
+  const eventSource = new EventSource('https://guitarlessbackend.azurewebsites.net/progress');
   eventSourceRef.current = eventSource;
 
   eventSource.onmessage = (event) => {
@@ -158,7 +159,7 @@ const handleFileUpload = async (uploadedFile) => {
     const formData = new FormData();
     formData.append('file', uploadedFile);
 
-    const response = await fetch('http://guitarlessappdemo.westus2.azurecontainer.io:8000/upload', {
+    const response = await fetch('https://guitarlessbackend.azurewebsites.net/upload', {
       method: 'POST',
       body: formData,
     });
